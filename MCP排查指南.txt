@@ -1,0 +1,75 @@
+MCP 服务器启动失败排查指南
+================================
+
+如果替换配置文件后仍然启动失败，请按以下步骤排查：
+
+第一步：验证配置文件
+------------------
+1. 检查配置文件是否正确保存
+2. 确认文件路径：c:\Users\Admin\AppData\Roaming\Trae CN\User\mcp.json
+3. 检查 JSON 格式是否正确（可以用 JSON 验证工具检查）
+
+第二步：手动测试运行
+------------------
+在 PowerShell 中手动运行命令测试：
+
+npx -y --registry http://bnpm.byted.org/ @mcp_hub/cli@latest run @mcp_hub/bytetech
+
+观察输出，看是否有错误信息。
+
+第三步：检查网络连接
+------------------
+1. 测试是否能访问 bnpm.byted.org
+2. 尝试在浏览器中访问：http://bnpm.byted.org/
+3. 检查是否需要代理或 VPN
+
+第四步：检查 npm 和 npx
+---------------------
+1. 检查 npm 是否安装：npm --version
+2. 检查 npx 是否可用：npx --version
+3. 清除 npm 缓存：npm cache clean --force
+
+第五步：查看 Trae 日志
+-------------------
+1. 在 Trae 中打开开发者工具（通常是 F12 或 Ctrl+Shift+I）
+2. 查看 Console 标签页中的错误信息
+3. 查看 Network 标签页中是否有相关请求
+
+第六步：检查环境变量
+------------------
+1. 检查是否有 NODE_PATH 等相关环境变量
+2. 检查是否有代理环境变量（HTTP_PROXY, HTTPS_PROXY）
+
+第七步：重新安装 MCP 服务器
+-------------------------
+如果以上都不行，尝试重新安装：
+
+npx -y --registry http://bnpm.byted.org/ @mcp_hub/cli@latest uninstall @mcp_hub/bytetech --client trae
+
+然后再重新安装：
+
+npx -y --registry http://bnpm.byted.org/ @mcp_hub/cli@latest install @mcp_hub/bytetech --client trae
+
+常见错误及解决方案
+------------------
+
+错误 1：找不到 @mcp_hub/bytetech
+- 解决：确认 registry 参数正确，检查网络连接
+
+错误 2：权限被拒绝
+- 解决：以管理员身份运行 Trae，或检查文件权限
+
+错误 3：端口被占用
+- 解决：检查是否有其他程序占用了相关端口
+
+错误 4：Node.js 版本过低
+- 解决：升级 Node.js 到最新 LTS 版本
+
+收集诊断信息
+------------
+如果问题仍然存在，收集以下信息：
+1. Trae 版本
+2. Node.js 版本（node --version）
+3. npm 版本（npm --version）
+4. 手动运行命令的完整输出
+5. Trae 开发者工具中的错误截图

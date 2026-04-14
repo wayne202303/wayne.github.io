@@ -1,0 +1,27 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>配表差异报告</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f5f5f5; }
+        h1 { color: #333; border-bottom: 2px solid #333; padding-bottom: 10px; }
+        h2 { color: #555; margin-top: 30px; }
+        .summary { background: #fff; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+        .sheet-section { background: #fff; padding: 20px; border-radius: 5px; margin-bottom: 20px; }
+        .added { color: green; }
+        .removed { color: red; }
+        .modified { color: orange; }
+        table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #4CAF50; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        .change-old { background-color: #ffcccc; }
+        .change-new { background-color: #ccffcc; }
+    </style>
+</head>
+<body>
+<h1>配表差异报告</h1><div class="summary"><p><strong>新增工作表:</strong> 无</p><p><strong>删除工作表:</strong> 无</p><p><strong>修改工作表:</strong> 1 个</p></div><div class="sheet-section"><h2>Hero</h2><p>旧表大小: 4 行 × 6 列</p><p>新表大小: 4 行 × 6 列</p><table><tr><th>行号/键</th><th>变更类型</th><th>详情</th></tr><tr><td>3</td><td class="modified">modified</td><td>变更字段: {"speed": {"old": 80, "new": 100}}</td></tr></table></div>
+</body>
+</html>

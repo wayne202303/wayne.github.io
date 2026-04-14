@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "bytetech": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "--registry",
+        "http://bnpm.byted.org/",
+        "@mcp_hub/cli@latest",
+        "run",
+        "@mcp_hub/bytetech"
+      ],
+      "env": {}
+    }
+  }
+}

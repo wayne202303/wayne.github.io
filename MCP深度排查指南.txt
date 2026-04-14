@@ -1,0 +1,145 @@
+MCP 服务器深度排查指南（配置正确但仍失败）
+=================================================
+
+如果诊断脚本显示配置正确，但 Trae 中仍然显示启动失败，请按以下步骤深入排查：
+
+第一部分：检查 Trae 内部状态
+---------------------------
+
+1. 检查 Trae 开发者工具 Console
+   - 打开 Trae
+   - 按 F12 或 Ctrl+Shift+I 打开开发者工具
+   - 切换到 Console 标签
+   - 点击 MCP 服务器的「重试」按钮
+   - 观察是否有错误信息，特别注意：
+     * 红色的错误信息
+     * 包含 "mcp"、"spawn"、"stdio" 的日志
+     * 任何异常堆栈信息
+
+2. 检查 Trae 开发者工具 Network
+   - 切换到 Network 标签
+   - 点击「重试」按钮
+   - 查看是否有相关请求失败
+   - 检查请求的 Response 内容
+
+3. 检查 Trae 开发者工具 Application
+   - 切换到 Application 标签
+   - 查看 Local Storage 中是否有 MCP 相关状态
+   - 查看是否有错误缓存
+
+第二部分：进程和日志检查
+-----------------------
+
+4. 检查进程是否真的在运行
+   打开 PowerShell，运行：
+   
+   Get-Process | Where-Object {$_.ProcessName -like "*node*" -or $_.ProcessName -like "*cmd*"} | Select-Object ProcessName, Id, Path
+   
+   点击「重试」后立即运行上述命令，看是否有新的 node/cmd 进程启动
+
+5. 检查临时文件和日志
+   检查以下目录是否有相关日志：
+   - c:\Users\Admin\AppData\Local\Temp\
+   - c:\Users\Admin\AppData\Roaming\Trae CN\Logs\（如果存在）
+
+第三部分：环境和权限检查
+-----------------------
+
+6. 检查 Trae 的运行权限
+   - 右键点击 Trae 图标
+   - 选择「以管理员身份运行」
+   - 再次尝试启动 MCP 服务器
+
+7. 检查环境变量
+   在 PowerShell 中运行：
+   
+   Get-ChildItem Env: | Where-Object {$_.Name -like "*NODE*" -or $_.Name -like "*PROXY*" -or $_.Name -like "*PATH*"}
+   
+   特别注意：
+   - NODE_PATH
+   - HTTP_PROXY / HTTPS_PROXY
+   - PATH 中是否包含 node.js
+
+8. 尝试设置环境变量后启动
+   在 PowerShell 中设置临时环境变量，然后手动启动 Trae：
+   
+   $env:NODE_ENV="development"
+   $env:NODE_DEBUG="mcp"
+   # 然后启动 Trae
+
+第四部分：替代启动方式测试
+-------------------------
+
+9. 测试不同的命令方式
+   修改配置文件，尝试不同的启动方式：
+   
+   方式 A：使用完整路径
+   "command": "C:\\Program Files\\nodejs\\npx.cmd",
+   
+   方式 B：使用 node 直接运行
+   "command": "node",
+   "args": ["-e", "console.log('test'); process.stdin.pipe(process.stdout)"]
+   
+   方式 C：使用 powershell
+   "command": "powershell",
+   "args": ["-Command", "npx -y --registry http://bnpm.byted.org/ @mcp_hub/cli@latest run @mcp_hub/bytetech"]
+
+10. 测试简单的 MCP 服务器
+    创建一个最简单的 MCP 服务器测试配置，先确认 MCP 框架本身是否正常工作。
+
+第五部分：重新安装和重置
+-------------------------
+
+11. 完全卸载并重新安装
+    在 PowerShell 中运行：
+    
+    npx -y --registry http://bnpm.byted.org/ @mcp_hub/cli@latest uninstall @mcp_hub/bytetech --client trae
+    
+    等待几秒后，再安装：
+    
+    npx -y --registry http://bnpm.byted.org/ @mcp_hub/cli@latest install @mcp_hub/bytetech --client trae
+
+12. 清除 npm 缓存
+    npm cache clean --force
+    
+    然后删除：
+    - c:\Users\Admin\AppData\Roaming\npm-cache\
+    - c:\Users\Admin\AppData\Local\npm-cache\
+
+13. 重置 Trae 的 MCP 配置
+    - 关闭 Trae
+    - 备份 mcp.json
+    - 删除 mcp.json
+    - 重新启动 Trae
+    - 重新安装 MCP 服务器
+
+第六部分：收集详细信息
+-----------------------
+
+14. 收集以下信息以便进一步分析：
+    - Trae 版本（在 Trae 设置中查看）
+    - 完整的 Console 错误截图
+    - 手动运行命令的完整输出
+    - 进程列表截图
+    - 环境变量列表
+
+15. 尝试其他 MCP 客户端
+    如果有安装 Cursor、Cline 或 Windsurf，尝试在这些客户端中安装相同的 MCP 服务器，看是否能正常工作。
+
+常见深层问题及解决方案
+-----------------------
+
+问题 A：stdio 通信失败
+- 症状：配置正确，进程启动后立即退出
+- 可能原因：Trae 和子进程的 stdio 管道建立失败
+- 解决：尝试使用不同的 command/args 组合
+
+问题 B：超时问题
+- 症状：显示启动失败，但进程实际上正在运行
+- 可能原因：MCP 服务器启动时间过长
+- 解决：等待更长时间，或检查网络下载速度
+
+问题 C：路径中包含空格
+- 症状：命令执行失败
+- 可能原因：node.js 或 npx 路径包含空格
+- 解决：确保路径正确转义，或使用短路径

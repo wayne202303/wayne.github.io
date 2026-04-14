@@ -1,0 +1,193 @@
+{
+  "sheets": {
+    "added": [
+      "Skill"
+    ],
+    "removed": [],
+    "common": [
+      "Item",
+      "Hero"
+    ]
+  },
+  "comparisons": {
+    "Item": {
+      "sheet_name": "Item",
+      "old_shape": "(3, 4)",
+      "new_shape": "(3, 4)",
+      "added_columns": [],
+      "removed_columns": [],
+      "row_changes": [
+        {
+          "row": 0,
+          "type": "modified",
+          "data": {
+            "old": {
+              "id": 2001,
+              "name": "铁剑",
+              "price": 100,
+              "type": "武器"
+            },
+            "new": {
+              "id": 2001,
+              "name": "钢剑",
+              "price": 200,
+              "type": "武器"
+            }
+          },
+          "changes": {
+            "name": {
+              "old": "铁剑",
+              "new": "钢剑"
+            },
+            "price": {
+              "old": 100,
+              "new": 200
+            }
+          }
+        },
+        {
+          "row": 2,
+          "type": "modified",
+          "data": {
+            "old": {
+              "id": 2003,
+              "name": "药瓶",
+              "price": 20,
+              "type": "消耗品"
+            },
+            "new": {
+              "id": 2004,
+              "name": "魔法卷轴",
+              "price": 150,
+              "type": "消耗品"
+            }
+          },
+          "changes": {
+            "id": {
+              "old": 2003,
+              "new": 2004
+            },
+            "name": {
+              "old": "药瓶",
+              "new": "魔法卷轴"
+            },
+            "price": {
+              "old": 20,
+              "new": 150
+            }
+          }
+        }
+      ],
+      "has_changes": true
+    },
+    "Hero": {
+      "sheet_name": "Hero",
+      "old_shape": "(3, 5)",
+      "new_shape": "(4, 6)",
+      "added_columns": [
+        "speed"
+      ],
+      "removed_columns": [],
+      "row_changes": [
+        {
+          "row": 0,
+          "type": "modified",
+          "data": {
+            "old": {
+              "id": 1001,
+              "name": "战士",
+              "hp": 1000,
+              "attack": 150,
+              "defense": 100
+            },
+            "new": {
+              "id": 1001,
+              "name": "战士",
+              "hp": 1100,
+              "attack": 150,
+              "defense": 100,
+              "speed": 50
+            }
+          },
+          "changes": {
+            "hp": {
+              "old": 1000,
+              "new": 1100
+            }
+          }
+        },
+        {
+          "row": 1,
+          "type": "modified",
+          "data": {
+            "old": {
+              "id": 1002,
+              "name": "法师",
+              "hp": 600,
+              "attack": 200,
+              "defense": 50
+            },
+            "new": {
+              "id": 1002,
+              "name": "法师",
+              "hp": 600,
+              "attack": 220,
+              "defense": 50,
+              "speed": 40
+            }
+          },
+          "changes": {
+            "attack": {
+              "old": 200,
+              "new": 220
+            }
+          }
+        },
+        {
+          "row": 2,
+          "type": "modified",
+          "data": {
+            "old": {
+              "id": 1003,
+              "name": "弓手",
+              "hp": 700,
+              "attack": 180,
+              "defense": 60
+            },
+            "new": {
+              "id": 1003,
+              "name": "游侠",
+              "hp": 750,
+              "attack": 180,
+              "defense": 60,
+              "speed": 70
+            }
+          },
+          "changes": {
+            "name": {
+              "old": "弓手",
+              "new": "游侠"
+            },
+            "hp": {
+              "old": 700,
+              "new": 750
+            }
+          }
+        },
+        {
+          "row": 3,
+          "type": "added",
+          "data": {
+            "id": 1004,
+            "name": "刺客",
+            "hp": 500,
+            "attack": 250,
+            "defense": 30,
+            "speed": 80
+          }
+        }
+      ],
+      "has_changes": true
+    }
+  }
+}

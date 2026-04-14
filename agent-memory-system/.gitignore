@@ -1,0 +1,11 @@
+__pycache__/
+.pytest_cache/
+.DS_Store
+.skillup-artifacts/
+.skillup-check.json
+.skillup-*-current.json
+.skillup-dryrun.json
+.skillup-publish.json
+.skillup-publish-*.json
+.skillup-*-sync.json
+.skillup.local.toml

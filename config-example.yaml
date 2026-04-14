@@ -1,0 +1,21 @@
+# 配表检查工具配置示例
+
+# 主键配置：为每个工作表指定主键列
+primary_keys:
+  Hero: id
+  Item: id
+  Skill: id
+
+# 忽略的列：比较时忽略这些列
+ignore_columns:
+  - create_time
+  - update_time
+  - remark
+
+# 忽略的工作表：比较时忽略这些表
+ignore_sheets:
+  - Log
+  - Temp
+
+# 输出目录
+output_dir: ./reports

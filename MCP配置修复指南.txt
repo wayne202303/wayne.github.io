@@ -1,0 +1,42 @@
+MCP 服务器启动失败修复指南
+================================
+
+问题原因：
+--------
+MCP 配置文件中缺少 registry 参数，导致无法正确访问字节跳动的 npm 仓库。
+
+修复步骤：
+--------
+
+1. 打开配置文件：
+   c:\Users\Admin\AppData\Roaming\Trae CN\User\mcp.json
+
+2. 将内容修改为：
+{
+  "mcpServers": {
+    "bytetech": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "--registry",
+        "http://bnpm.byted.org/",
+        "@mcp_hub/cli@latest",
+        "run",
+        "@mcp_hub/bytetech"
+      ],
+      "env": {}
+    }
+  }
+}
+
+3. 保存文件后，在 Trae 中点击"重试"按钮重启 MCP 服务器
+
+主要修改点：
+-----------
+在 args 数组中添加了：
+"--registry",
+"http://bnpm.byted.org/",
+
+这样 npx 就能正确从字节跳动的私有仓库下载和运行 MCP 服务器了。

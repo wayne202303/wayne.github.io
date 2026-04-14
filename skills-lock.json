@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "sensight": {
+      "source": "default/public",
+      "sourceType": "byted",
+      "computedHash": "62592ebdc6cfa5236842c4ead10933cc1c689da0b4a4fa10ad23bcf657451263"
+    }
+  }
+}

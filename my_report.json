@@ -1,0 +1,50 @@
+{
+  "sheets": {
+    "added": [],
+    "removed": [],
+    "common": [
+      "Hero"
+    ]
+  },
+  "comparisons": {
+    "Hero": {
+      "sheet_name": "Hero",
+      "old_shape": "(4, 6)",
+      "new_shape": "(4, 6)",
+      "added_columns": [],
+      "removed_columns": [],
+      "row_changes": [
+        {
+          "row": 3,
+          "type": "modified",
+          "data": {
+            "old": {
+              "id": 1004,
+              "name": "刺客",
+              "hp": 500,
+              "attack": 250,
+              "defense": 30,
+              "speed": 80
+            },
+            "new": {
+              "id": 1004,
+              "name": "刺客",
+              "hp": 500,
+              "attack": 250,
+              "defense": 30,
+              "speed": 100
+            }
+          },
+          "changes": {
+            "speed": {
+              "old": 80,
+              "new": 100
+            }
+          }
+        }
+      ],
+      "has_changes": true,
+      "primary_key_used": null
+    }
+  }
+}

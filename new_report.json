@@ -1,0 +1,172 @@
+{
+  "sheets": {
+    "added": [
+      "Skill"
+    ],
+    "removed": [],
+    "common": [
+      "Hero",
+      "Item"
+    ]
+  },
+  "comparisons": {
+    "Hero": {
+      "sheet_name": "Hero",
+      "old_shape": "(3, 5)",
+      "new_shape": "(4, 6)",
+      "added_columns": [
+        "speed"
+      ],
+      "removed_columns": [],
+      "row_changes": [
+        {
+          "key": 1004,
+          "type": "added",
+          "data": {
+            "name": "刺客",
+            "hp": 500,
+            "attack": 250,
+            "defense": 30,
+            "speed": 80
+          }
+        },
+        {
+          "key": 1001,
+          "type": "modified",
+          "data": {
+            "old": {
+              "name": "战士",
+              "hp": 1000,
+              "attack": 150,
+              "defense": 100
+            },
+            "new": {
+              "name": "战士",
+              "hp": 1100,
+              "attack": 150,
+              "defense": 100,
+              "speed": 50
+            }
+          },
+          "changes": {
+            "hp": {
+              "old": 1000,
+              "new": 1100
+            }
+          }
+        },
+        {
+          "key": 1002,
+          "type": "modified",
+          "data": {
+            "old": {
+              "name": "法师",
+              "hp": 600,
+              "attack": 200,
+              "defense": 50
+            },
+            "new": {
+              "name": "法师",
+              "hp": 600,
+              "attack": 220,
+              "defense": 50,
+              "speed": 40
+            }
+          },
+          "changes": {
+            "attack": {
+              "old": 200,
+              "new": 220
+            }
+          }
+        },
+        {
+          "key": 1003,
+          "type": "modified",
+          "data": {
+            "old": {
+              "name": "弓手",
+              "hp": 700,
+              "attack": 180,
+              "defense": 60
+            },
+            "new": {
+              "name": "游侠",
+              "hp": 750,
+              "attack": 180,
+              "defense": 60,
+              "speed": 70
+            }
+          },
+          "changes": {
+            "name": {
+              "old": "弓手",
+              "new": "游侠"
+            },
+            "hp": {
+              "old": 700,
+              "new": 750
+            }
+          }
+        }
+      ],
+      "has_changes": true,
+      "primary_key_used": "id"
+    },
+    "Item": {
+      "sheet_name": "Item",
+      "old_shape": "(3, 4)",
+      "new_shape": "(3, 4)",
+      "added_columns": [],
+      "removed_columns": [],
+      "row_changes": [
+        {
+          "key": 2004,
+          "type": "added",
+          "data": {
+            "name": "魔法卷轴",
+            "price": 150,
+            "type": "消耗品"
+          }
+        },
+        {
+          "key": 2003,
+          "type": "removed",
+          "data": {
+            "name": "药瓶",
+            "price": 20,
+            "type": "消耗品"
+          }
+        },
+        {
+          "key": 2001,
+          "type": "modified",
+          "data": {
+            "old": {
+              "name": "铁剑",
+              "price": 100,
+              "type": "武器"
+            },
+            "new": {
+              "name": "钢剑",
+              "price": 200,
+              "type": "武器"
+            }
+          },
+          "changes": {
+            "name": {
+              "old": "铁剑",
+              "new": "钢剑"
+            },
+            "price": {
+              "old": 100,
+              "new": 200
+            }
+          }
+        }
+      ],
+      "has_changes": true,
+      "primary_key_used": "id"
+    }
+  }
+}

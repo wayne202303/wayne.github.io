@@ -1,0 +1,27 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>配表差异报告</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f5f5f5; }
+        h1 { color: #333; border-bottom: 2px solid #333; padding-bottom: 10px; }
+        h2 { color: #555; margin-top: 30px; }
+        .summary { background: #fff; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+        .sheet-section { background: #fff; padding: 20px; border-radius: 5px; margin-bottom: 20px; }
+        .added { color: green; }
+        .removed { color: red; }
+        .modified { color: orange; }
+        table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #4CAF50; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        .change-old { background-color: #ffcccc; }
+        .change-new { background-color: #ccffcc; }
+    </style>
+</head>
+<body>
+<h1>配表差异报告</h1><div class="summary"><p><strong>新增工作表:</strong> Skill</p><p><strong>删除工作表:</strong> 无</p><p><strong>修改工作表:</strong> 2 个</p></div><div class="sheet-section"><h2>Hero</h2><p>旧表大小: 3 行 × 5 列</p><p>新表大小: 4 行 × 6 列</p><p><strong>使用主键:</strong> id</p><p class="added">新增列: speed</p><table><tr><th>行号/键</th><th>变更类型</th><th>详情</th></tr><tr><td>1004</td><td class="added">added</td><td>{"name": "刺客", "hp": 500, "attack": 250, "defense": 30, "speed": 80}</td></tr><tr><td>1001</td><td class="modified">modified</td><td>变更字段: {"hp": {"old": 1000, "new": 1100}}</td></tr><tr><td>1002</td><td class="modified">modified</td><td>变更字段: {"attack": {"old": 200, "new": 220}}</td></tr><tr><td>1003</td><td class="modified">modified</td><td>变更字段: {"name": {"old": "弓手", "new": "游侠"}, "hp": {"old": 700, "new": 750}}</td></tr></table></div><div class="sheet-section"><h2>Item</h2><p>旧表大小: 3 行 × 4 列</p><p>新表大小: 3 行 × 4 列</p><p><strong>使用主键:</strong> id</p><table><tr><th>行号/键</th><th>变更类型</th><th>详情</th></tr><tr><td>2004</td><td class="added">added</td><td>{"name": "魔法卷轴", "price": 150, "type": "消耗品"}</td></tr><tr><td>2003</td><td class="removed">removed</td><td>{"name": "药瓶", "price": 20, "type": "消耗品"}</td></tr><tr><td>2001</td><td class="modified">modified</td><td>变更字段: {"name": {"old": "铁剑", "new": "钢剑"}, "price": {"old": 100, "new": 200}}</td></tr></table></div>
+</body>
+</html>

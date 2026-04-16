@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="博客管理系统 - 文章管理">
+    <title>博客管理系统</title>
+    <link rel="stylesheet" href="css/style-minimal.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <h1><a href="index.html">📝 我的博客</a></h1>
+                <nav>
+                    <a href="index.html"><i class="fas fa-home"></i> 首页</a>
+                    <a href="admin.html" class="active"><i class="fas fa-cog"></i> 管理</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container admin-container">
+        <aside class="admin-sidebar">
+            <h3><i class="fas fa-bars"></i> 管理菜单</h3>
+            <ul class="admin-menu">
+                <li class="active" data-tab="articles">
+                    <i class="fas fa-file-alt"></i> 文章管理
+                </li>
+                <li data-tab="comments">
+                    <i class="fas fa-comments"></i> 评论管理
+                </li>
+                <li data-tab="tags">
+                    <i class="fas fa-tags"></i> 标签管理
+                </li>
+                <li data-tab="stats">
+                    <i class="fas fa-chart-bar"></i> 数据统计
+                </li>
+            </ul>
+        </aside>
+
+        <section class="admin-content">
+            <div id="articles-tab" class="tab-content active">
+                <div class="admin-header">
+                    <h2><i class="fas fa-file-alt"></i> 文章管理</h2>
+                    <div class="admin-actions">
+                        <button id="batch-delete-btn" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> 批量删除
+                        </button>
+                        <button id="add-article-btn" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> 新增文章
+                        </button>
+                        <button id="import-btn" class="btn btn-success">
+                            <i class="fas fa-upload"></i> 批量导入
+                        </button>
+                    </div>
+                </div>
+
+                <div class="filters">
+                    <div class="filter-group">
+                        <label><i class="fas fa-search"></i> 搜索</label>
+                        <input type="text" id="search-input" placeholder="搜索标题或内容...">
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-calendar"></i> 年份</label>
+                        <select id="year-filter">
+                            <option value="">全部年份</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-tag"></i> 分类</label>
+                        <select id="category-filter">
+                            <option value="">全部分类</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-tags"></i> 标签</label>
+                        <select id="tag-filter">
+                            <option value="">全部标签</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" id="select-all">
+                                </th>
+                                <th>ID</th>
+                                <th>标题</th>
+                                <th>分类</th>
+                                <th>标签</th>
+                                <th>发布时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="articles-table-body">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination" id="admin-pagination">
+                </div>
+            </div>
+
+            <div id="comments-tab" class="tab-content">
+                <div class="admin-header">
+                    <h2><i class="fas fa-comments"></i> 评论管理</h2>
+                    <div class="admin-actions">
+                        <button id="batch-delete-comments-btn" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> 批量删除
+                        </button>
+                    </div>
+                </div>
+
+                <div class="filters">
+                    <div class="filter-group">
+                        <label><i class="fas fa-search"></i> 搜索</label>
+                        <input type="text" id="comment-search-input" placeholder="搜索评论内容或作者...">
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-file-alt"></i> 文章</label>
+                        <select id="comment-article-filter">
+                            <option value="">全部文章</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" id="select-all-comments">
+                                </th>
+                                <th>ID</th>
+                                <th>文章</th>
+                                <th>作者</th>
+                                <th>内容</th>
+                                <th>评论时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="comments-table-body">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination" id="comments-pagination">
+                </div>
+            </div>
+
+            <div id="tags-tab" class="tab-content">
+                <div class="admin-header">
+                    <h2><i class="fas fa-tags"></i> 标签管理</h2>
+                    <div class="admin-actions">
+                        <button id="add-tag-btn" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> 新增标签
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>标签名</th>
+                                <th>使用次数</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tags-table-body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="stats-tab" class="tab-content">
+                <div class="admin-header">
+                    <h2><i class="fas fa-chart-bar"></i> 数据统计</h2>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-file-alt"></i></div>
+                        <div class="stat-info">
+                            <div class="stat-number" id="total-articles">0</div>
+                            <div class="stat-label">总文章数</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-tag"></i></div>
+                        <div class="stat-info">
+                            <div class="stat-number" id="total-categories">0</div>
+                            <div class="stat-label">分类数</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-tags"></i></div>
+                        <div class="stat-info">
+                            <div class="stat-number" id="total-tags">0</div>
+                            <div class="stat-label">标签数</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-charts">
+                    <div class="chart-container">
+                        <h3><i class="fas fa-calendar"></i> 年度文章分布</h3>
+                        <div id="yearly-stats" class="yearly-stats">
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <h3><i class="fas fa-tag"></i> 分类文章分布</h3>
+                        <div id="category-stats" class="category-stats">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="article-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">新增文章</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="article-form">
+                    <input type="hidden" id="article-id">
+                    
+                    <div class="form-group">
+                        <label for="article-title">标题 *</label>
+                        <input type="text" id="article-title" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="article-slug">URL Slug</label>
+                        <input type="text" id="article-slug">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="article-category">分类 *</label>
+                        <select id="article-category" required>
+                            <option value="">请选择分类</option>
+                        </select>
+                        <button type="button" id="new-category-btn" class="btn btn-small">
+                            <i class="fas fa-plus"></i> 新建分类
+                        </button>
+                        <button type="button" id="delete-category-btn" class="btn btn-small btn-danger">
+                            <i class="fas fa-trash"></i> 删除分类
+                        </button>
+                    </div>
+
+                    <div class="form-group">
+                        <label>标签</label>
+                        <div class="tags-input">
+                            <input type="text" id="tag-search" placeholder="搜索或输入标签...">
+                            <div id="tag-suggestions" class="tag-suggestions"></div>
+                        </div>
+                        <div id="selected-tags" class="selected-tags"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="article-excerpt">摘要</label>
+                        <textarea id="article-excerpt" rows="3"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="article-content">内容 *</label>
+                        <textarea id="article-content" rows="15" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="article-date">发布时间</label>
+                        <input type="datetime-local" id="article-date">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary modal-cancel">取消</button>
+                <button type="button" class="btn btn-primary" id="save-article-btn">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="delete-modal" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2><i class="fas fa-exclamation-triangle"></i> 确认删除</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="delete-message">确定要删除这篇文章吗？</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary modal-cancel">取消</button>
+                <button type="button" class="btn btn-danger" id="confirm-delete-btn">删除</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="tag-modal" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2 id="tag-modal-title">新增标签</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="tag-form">
+                    <input type="hidden" id="tag-old-name">
+                    <div class="form-group">
+                        <label for="tag-name">标签名 *</label>
+                        <input type="text" id="tag-name" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary modal-cancel">取消</button>
+                <button type="button" class="btn btn-primary" id="save-tag-btn">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="category-modal" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2><i class="fas fa-plus"></i> 新建分类</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="category-form">
+                    <div class="form-group">
+                        <label for="category-name">分类名称 *</label>
+                        <input type="text" id="category-name" placeholder="请输入分类名称" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary modal-cancel">取消</button>
+                <button type="button" class="btn btn-primary" id="save-category-btn">创建</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="delete-category-modal" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2><i class="fas fa-exclamation-triangle"></i> 确认删除</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="delete-category-message">确定要删除这个分类吗？</p>
+                <p style="color: #e74c3c; font-size: 14px;">注意：删除后，使用该分类的文章将被设置为"未分类"。</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary modal-cancel">取消</button>
+                <button type="button" class="btn btn-danger" id="confirm-delete-category-btn">删除</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="import-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-upload"></i> 批量导入</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="import-instructions">
+                    <h3>导入说明</h3>
+                    <p>请选择包含文章数据的文本文件（Tab分隔格式）</p>
+                    <p>格式：时间\t标题\t内容</p>
+                </div>
+                <div class="form-group">
+                    <label for="import-file">选择文件</label>
+                    <input type="file" id="import-file" accept=".txt,.xls,.xlsx">
+                </div>
+                <div id="import-preview" class="import-preview">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary modal-cancel">取消</button>
+                <button type="button" class="btn btn-success" id="confirm-import-btn">导入</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="comment-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="comment-modal-title">编辑评论</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="comment-form">
+                    <input type="hidden" id="comment-post-id">
+                    <input type="hidden" id="comment-id">
+                    
+                    <div class="form-group">
+                        <label>文章</label>
+                        <input type="text" id="comment-article-title" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="comment-author">作者</label>
+                        <input type="text" id="comment-author" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="comment-content">评论内容 *</label>
+                        <textarea id="comment-content" rows="8" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary modal-cancel">取消</button>
+                <button type="button" class="btn btn-primary" id="save-comment-btn">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+
+
+    <script src="js/admin.js"></script>
+</body>
+</html>

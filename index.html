@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="个人博客 - 分享技术与生活">
+    <meta name="keywords" content="博客, 技术, 生活, 分享">
+    <meta name="author" content="博客作者">
+    <title>个人博客</title>
+    <link rel="stylesheet" href="css/style-minimal.css">
+</head>
+<body>
+    <main class="container">
+        <div class="list-view" id="list-view">
+            <div class="hero">
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <h2 class="backyard-title">Backyard</h2>
+                    <button id="theme-toggle" class="theme-toggle">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="filters" id="category-filters">
+            </div>
+
+            <div class="content-wrapper">
+                <div class="main-content">
+                    <div class="articles-grid" id="articles-grid">
+                    </div>
+
+                    <div class="pagination" id="pagination">
+                    </div>
+                </div>
+
+                <aside class="sidebar">
+                    <div class="sidebar-section">
+                        <h4>最新文章</h4>
+                        <ul class="sidebar-list" id="recent-articles">
+                        </ul>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <h4>分类</h4>
+                        <ul class="sidebar-list" id="sidebar-categories">
+                        </ul>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <h4>标签</h4>
+                        <div class="article-tags" id="sidebar-tags">
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+
+        <div class="post-view" id="post-view" style="display: none;">
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2024 个人博客. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/app-minimal.js"></script>
+</body>
+</html>

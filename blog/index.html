@@ -7,66 +7,68 @@
     <meta name="keywords" content="博客, 技术, 生活, 分享">
     <meta name="author" content="博客作者">
     <title>个人博客</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style-minimal.css">
 </head>
 <body>
-    <header class="header">
-        <div class="container">
-            <h1 class="blog-title">
-                <a href="#/">我的个人博客</a>
-            </h1>
-            <nav class="nav">
-                <a href="#/" class="nav-link active">首页</a>
-                <a href="#/categories" class="nav-link">分类</a>
-                <a href="#/tags" class="nav-link">标签</a>
-                <a href="#/about" class="nav-link">关于</a>
-            </nav>
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="搜索文章..." class="search-input">
-                <button id="searchBtn" class="search-btn">搜索</button>
+    <main class="container">
+        <div class="list-view" id="list-view">
+            <div class="hero">
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <h2 class="backyard-title">Backyard</h2>
+                    <button id="theme-toggle" class="theme-toggle">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="filters" id="category-filters">
+            </div>
+
+            <div class="content-wrapper">
+                <div class="main-content">
+                    <div class="articles-grid" id="articles-grid">
+                    </div>
+
+                    <div class="pagination" id="pagination">
+                    </div>
+                </div>
+
+                <aside class="sidebar">
+                    <div class="sidebar-section">
+                        <h4>最新文章</h4>
+                        <ul class="sidebar-list" id="recent-articles">
+                        </ul>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <h4>分类</h4>
+                        <ul class="sidebar-list" id="sidebar-categories">
+                        </ul>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <h4>标签</h4>
+                        <div class="article-tags" id="sidebar-tags">
+                        </div>
+                    </div>
+                </aside>
             </div>
         </div>
-    </header>
 
-    <main class="main">
-        <div class="container">
-            <aside class="sidebar">
-                <div class="sidebar-section">
-                    <h3>分类</h3>
-                    <ul id="categoryList" class="category-list"></ul>
-                </div>
-                <div class="sidebar-section">
-                    <h3>标签</h3>
-                    <div id="tagList" class="tag-list"></div>
-                </div>
-                <div class="sidebar-section">
-                    <h3>最新文章</h3>
-                    <ul id="recentPosts" class="recent-posts"></ul>
-                </div>
-            </aside>
-
-            <section class="content">
-                <div id="articleList" class="article-list"></div>
-                
-                <div id="pagination" class="pagination"></div>
-            </section>
+        <div class="post-view" id="post-view" style="display: none;">
         </div>
     </main>
 
-    <article id="articleDetail" class="article-detail hidden">
+    <footer>
         <div class="container">
-            <button id="backBtn" class="back-btn">← 返回列表</button>
-            <div id="articleContent"></div>
-        </div>
-    </article>
-
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2024 个人博客. All rights reserved.</p>
+            <div class="footer-content">
+                <p>&copy; 2024 个人博客. All rights reserved.</p>
+            </div>
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="js/app.js"></script>
+    <script src="js/app-minimal.js"></script>
 </body>
 </html>

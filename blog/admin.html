@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="博客管理系统 - 文章管理">
     <title>博客管理系统</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style-minimal.css">
     <link rel="stylesheet" href="css/admin.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 </head>
@@ -13,9 +13,9 @@
     <header>
         <div class="container">
             <div class="header-content">
-                <h1><a href="index.html">📝 我的博客</a></h1>
+                <h1><a href="index-minimal.html">📝 我的博客</a></h1>
                 <nav>
-                    <a href="index.html"><i class="fas fa-home"></i> 首页</a>
+                    <a href="index-minimal.html"><i class="fas fa-home"></i> 首页</a>
                     <a href="admin.html" class="active"><i class="fas fa-cog"></i> 管理</a>
                 </nav>
             </div>
@@ -28,6 +28,9 @@
             <ul class="admin-menu">
                 <li class="active" data-tab="articles">
                     <i class="fas fa-file-alt"></i> 文章管理
+                </li>
+                <li data-tab="comments">
+                    <i class="fas fa-comments"></i> 评论管理
                 </li>
                 <li data-tab="tags">
                     <i class="fas fa-tags"></i> 标签管理
@@ -101,6 +104,53 @@
                 </div>
 
                 <div class="pagination" id="admin-pagination">
+                </div>
+            </div>
+
+            <div id="comments-tab" class="tab-content">
+                <div class="admin-header">
+                    <h2><i class="fas fa-comments"></i> 评论管理</h2>
+                    <div class="admin-actions">
+                        <button id="batch-delete-comments-btn" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> 批量删除
+                        </button>
+                    </div>
+                </div>
+
+                <div class="filters">
+                    <div class="filter-group">
+                        <label><i class="fas fa-search"></i> 搜索</label>
+                        <input type="text" id="comment-search-input" placeholder="搜索评论内容或作者...">
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-file-alt"></i> 文章</label>
+                        <select id="comment-article-filter">
+                            <option value="">全部文章</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" id="select-all-comments">
+                                </th>
+                                <th>ID</th>
+                                <th>文章</th>
+                                <th>作者</th>
+                                <th>内容</th>
+                                <th>评论时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="comments-table-body">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination" id="comments-pagination">
                 </div>
             </div>
 
@@ -202,6 +252,9 @@
                         <button type="button" id="new-category-btn" class="btn btn-small">
                             <i class="fas fa-plus"></i> 新建分类
                         </button>
+                        <button type="button" id="delete-category-btn" class="btn btn-small btn-danger">
+                            <i class="fas fa-trash"></i> 删除分类
+                        </button>
                     </div>
 
                     <div class="form-group">
@@ -274,6 +327,44 @@
         </div>
     </div>
 
+    <div id="category-modal" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2><i class="fas fa-plus"></i> 新建分类</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="category-form">
+                    <div class="form-group">
+                        <label for="category-name">分类名称 *</label>
+                        <input type="text" id="category-name" placeholder="请输入分类名称" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary modal-cancel">取消</button>
+                <button type="button" class="btn btn-primary" id="save-category-btn">创建</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="delete-category-modal" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2><i class="fas fa-exclamation-triangle"></i> 确认删除</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="delete-category-message">确定要删除这个分类吗？</p>
+                <p style="color: #e74c3c; font-size: 14px;">注意：删除后，使用该分类的文章将被设置为"未分类"。</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary modal-cancel">取消</button>
+                <button type="button" class="btn btn-danger" id="confirm-delete-category-btn">删除</button>
+            </div>
+        </div>
+    </div>
+
     <div id="import-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -300,7 +391,43 @@
         </div>
     </div>
 
+    <div id="comment-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="comment-modal-title">编辑评论</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="comment-form">
+                    <input type="hidden" id="comment-post-id">
+                    <input type="hidden" id="comment-id">
+                    
+                    <div class="form-group">
+                        <label>文章</label>
+                        <input type="text" id="comment-article-title" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="comment-author">作者</label>
+                        <input type="text" id="comment-author" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="comment-content">评论内容 *</label>
+                        <textarea id="comment-content" rows="8" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary modal-cancel">取消</button>
+                <button type="button" class="btn btn-primary" id="save-comment-btn">保存</button>
+            </div>
+        </div>
+    </div>
+
     <div id="toast" class="toast"></div>
+
+
 
     <script src="js/admin.js"></script>
 </body>

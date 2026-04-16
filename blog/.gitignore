@@ -1,0 +1,37 @@
+# Test and debug files
+admin-test.html
+admin-simple.html
+debug_server.py
+diagnostic.html
+flask_server.py
+index-old.html
+login.html
+minimal_server.py
+simple_api_server.py
+simple_server.py
+start_server.py
+super_simple_server.py
+test-simple.html
+test_connection.py
+test_flask.py
+test_http.py
+test_json.py
+test_server.py
+test_simple.py
+test_socket.py
+update_posts_with_comments.py
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~.nib
+
+# IDE
+.vscode/
+.idea/

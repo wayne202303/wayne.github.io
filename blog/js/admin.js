@@ -11,8 +11,17 @@ class BlogAdmin {
         this.filteredPosts = [];
         this.selectedPostIds = new Set();
         this.deletingPostId = null;
+        this.deletingCategoryName = null;
         this.editingTagName = null;
         this.importData = [];
+        
+        // 评论相关属性
+        this.allComments = [];
+        this.filteredComments = [];
+        this.currentCommentPage = 1;
+        this.commentPageSize = 10;
+        this.selectedCommentIds = new Set();
+        this.editingComment = null;
         
         this.init();
     }
@@ -55,9 +64,35 @@ class BlogAdmin {
         
         this.categories = Array.from(categories).sort();
         this.tags = Array.from(tags.entries()).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count);
+        
+        // 处理评论数据
+        this.allComments = [];
+        this.posts.forEach(post => {
+            if (post.comments) {
+                post.comments.forEach(comment => {
+                    this.allComments.push({
+                        ...comment,
+                        postId: post.id,
+                        postTitle: post.title
+                    });
+                });
+            }
+        });
+        // 按时间倒序排列评论
+        this.allComments.sort((a, b) => new Date(b.date) - new Date(a.date));
+        this.filteredComments = [...this.allComments];
     }
     
     setupEventListeners() {
+        // 退出登录
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.logout();
+            });
+        }
+        
         document.querySelectorAll('.admin-menu li').forEach(item => {
             item.addEventListener('click', () => this.switchTab(item.dataset.tab));
         });
@@ -71,6 +106,9 @@ class BlogAdmin {
         
         document.getElementById('add-tag-btn').addEventListener('click', () => this.openTagModal());
         document.getElementById('save-tag-btn').addEventListener('click', () => this.saveTag());
+        document.getElementById('save-category-btn').addEventListener('click', () => this.saveCategory());
+        document.getElementById('delete-category-btn').addEventListener('click', () => this.deleteCategory());
+        document.getElementById('confirm-delete-category-btn').addEventListener('click', () => this.confirmDeleteCategory());
         
         document.getElementById('import-btn').addEventListener('click', () => this.openImportModal());
         document.getElementById('confirm-import-btn').addEventListener('click', () => this.confirmImport());
@@ -102,6 +140,13 @@ class BlogAdmin {
                 }
             });
         });
+        
+        // 评论相关事件监听器
+        document.getElementById('save-comment-btn').addEventListener('click', () => this.saveComment());
+        document.getElementById('batch-delete-comments-btn').addEventListener('click', () => this.batchDeleteComments());
+        document.getElementById('select-all-comments').addEventListener('change', (e) => this.toggleSelectAllComments(e.target.checked));
+        document.getElementById('comment-search-input').addEventListener('input', () => this.applyCommentFilters());
+        document.getElementById('comment-article-filter').addEventListener('change', () => this.applyCommentFilters());
     }
     
     switchTab(tabName) {
@@ -117,6 +162,8 @@ class BlogAdmin {
         
         if (tabName === 'articles') {
             this.render();
+        } else if (tabName === 'comments') {
+            this.renderComments();
         } else if (tabName === 'tags') {
             this.renderTags();
         } else if (tabName === 'stats') {
@@ -352,18 +399,90 @@ class BlogAdmin {
     }
     
     createNewCategory() {
-        const name = prompt('请输入新分类名称：');
-        if (name && name.trim()) {
-            if (!this.categories.includes(name.trim())) {
-                this.categories.push(name.trim());
+        const modal = document.getElementById('category-modal');
+        document.getElementById('category-name').value = '';
+        modal.classList.add('active');
+    }
+
+    saveCategory() {
+        const name = document.getElementById('category-name').value.trim();
+        if (name) {
+            if (!this.categories.includes(name)) {
+                this.categories.push(name);
                 this.categories.sort();
-                this.updateCategoryDropdown();
-                document.getElementById('article-category').value = name.trim();
+                this.updateAllCategoryDropdowns();
+                document.getElementById('article-category').value = name;
+                
+                // 保存数据到服务器
+                this.savePosts();
+                
                 this.showToast('分类创建成功', 'success');
+                this.closeModals();
             } else {
                 this.showToast('分类已存在', 'error');
             }
+        } else {
+            this.showToast('请输入分类名称', 'error');
         }
+    }
+
+    deleteCategory() {
+        const categorySelect = document.getElementById('article-category');
+        const currentCategory = categorySelect.value;
+        
+        if (!currentCategory) {
+            this.showToast('请先选择要删除的分类', 'error');
+            return;
+        }
+        
+        // 打开确认删除模态框
+        document.getElementById('delete-category-message').textContent = 
+            `确定要删除分类"${currentCategory}"吗？`;
+        this.deletingCategoryName = currentCategory;
+        document.getElementById('delete-category-modal').classList.add('active');
+    }
+
+    confirmDeleteCategory() {
+        if (!this.deletingCategoryName) return;
+        
+        const categoryName = this.deletingCategoryName;
+        
+        // 从分类列表中移除
+        const index = this.categories.indexOf(categoryName);
+        if (index !== -1) {
+            this.categories.splice(index, 1);
+        }
+        
+        // 更新所有使用该分类的文章为"未分类"
+        this.posts.forEach(post => {
+            if (post.category === categoryName) {
+                post.category = '未分类';
+            }
+        });
+        
+        // 更新所有下拉框
+        this.updateAllCategoryDropdowns();
+        
+        // 清空当前选择
+        document.getElementById('article-category').value = '';
+        
+        // 保存数据到服务器
+        this.savePosts();
+        
+        this.showToast(`分类"${categoryName}"已删除`, 'success');
+        this.closeModals();
+        this.deletingCategoryName = null;
+    }
+
+    updateAllCategoryDropdowns() {
+        // 更新文章编辑模态框的分类下拉框
+        this.updateCategoryDropdown();
+        
+        // 更新筛选器的分类下拉框
+        this.renderFilters();
+        
+        // 更新统计页面的分类统计
+        this.renderStats();
     }
     
     searchTags(query) {
@@ -573,6 +692,17 @@ class BlogAdmin {
             if (this.tags.find(t => t.name === name)) {
                 this.showToast('标签已存在', 'error');
                 return;
+            }
+            
+            // 新增标签时，将其添加到第一篇文章中，这样标签就会出现在标签列表中
+            if (this.posts.length > 0) {
+                const firstPost = this.posts[0];
+                if (!firstPost.tags) {
+                    firstPost.tags = [];
+                }
+                if (!firstPost.tags.includes(name)) {
+                    firstPost.tags.push(name);
+                }
             }
         }
         
@@ -799,10 +929,247 @@ class BlogAdmin {
         return `${year}-${month}-${day} ${hour}:${minute}`;
     }
     
+    // 评论管理相关方法
+    renderComments() {
+        this.renderCommentFilters();
+        this.renderCommentsTable();
+        this.renderCommentsPagination();
+    }
+    
+    renderCommentFilters() {
+        const articleFilter = document.getElementById('comment-article-filter');
+        articleFilter.innerHTML = '<option value="">全部文章</option>';
+        this.posts.forEach(post => {
+            articleFilter.innerHTML += `<option value="${post.id}">${this.escapeHtml(post.title)}</option>`;
+        });
+    }
+    
+    applyCommentFilters() {
+        const searchTerm = document.getElementById('comment-search-input').value.toLowerCase();
+        const articleFilter = document.getElementById('comment-article-filter').value;
+        
+        this.filteredComments = this.allComments.filter(comment => {
+            if (searchTerm) {
+                const searchIn = (comment.author + ' ' + comment.content).toLowerCase();
+                if (!searchIn.includes(searchTerm)) return false;
+            }
+            
+            if (articleFilter && comment.postId !== parseInt(articleFilter)) return false;
+            
+            return true;
+        });
+        
+        this.currentCommentPage = 1;
+        this.renderCommentsTable();
+        this.renderCommentsPagination();
+    }
+    
+    renderCommentsTable() {
+        const tbody = document.getElementById('comments-table-body');
+        const start = (this.currentCommentPage - 1) * this.commentPageSize;
+        const end = start + this.commentPageSize;
+        const pageComments = this.filteredComments.slice(start, end);
+        
+        tbody.innerHTML = pageComments.map(comment => `
+            <tr>
+                <td>
+                    <input type="checkbox" class="comment-checkbox" data-post-id="${comment.postId}" data-comment-id="${comment.id}" 
+                        ${this.selectedCommentIds.has(`${comment.postId}-${comment.id}`) ? 'checked' : ''}>
+                </td>
+                <td>${comment.id}</td>
+                <td>
+                    <strong>${this.escapeHtml(comment.postTitle)}</strong>
+                </td>
+                <td>${this.escapeHtml(comment.author)}</td>
+                <td>
+                    <div class="comment-preview">
+                        ${this.escapeHtml(comment.content.length > 50 ? comment.content.slice(0, 50) + '...' : comment.content)}
+                    </div>
+                </td>
+                <td>${this.formatDate(comment.date)}</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="action-btn edit" onclick="admin.openCommentModal(${comment.postId}, ${comment.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="action-btn delete" onclick="admin.deleteComment(${comment.postId}, ${comment.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+        
+        document.querySelectorAll('.comment-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', (e) => {
+                const key = `${e.target.dataset.postId}-${e.target.dataset.commentId}`;
+                if (e.target.checked) {
+                    this.selectedCommentIds.add(key);
+                } else {
+                    this.selectedCommentIds.delete(key);
+                }
+            });
+        });
+    }
+    
+    renderCommentsPagination() {
+        const totalPages = Math.ceil(this.filteredComments.length / this.commentPageSize);
+        const pagination = document.getElementById('comments-pagination');
+        
+        if (totalPages <= 1) {
+            pagination.innerHTML = '';
+            return;
+        }
+        
+        let html = '';
+        
+        html += `<button onclick="admin.goToCommentPage(${this.currentCommentPage - 1})" 
+            ${this.currentCommentPage === 1 ? 'disabled' : ''}>
+            <i class="fas fa-chevron-left"></i> 上一页
+        </button>`;
+        
+        for (let i = 1; i <= totalPages; i++) {
+            if (i === 1 || i === totalPages || 
+                (i >= this.currentCommentPage - 2 && i <= this.currentCommentPage + 2)) {
+                html += `<button onclick="admin.goToCommentPage(${i})" 
+                    class="${i === this.currentCommentPage ? 'active' : ''}">${i}</button>`;
+            } else if (i === this.currentCommentPage - 3 || i === this.currentCommentPage + 3) {
+                html += `<span>...</span>`;
+            }
+        }
+        
+        html += `<button onclick="admin.goToCommentPage(${this.currentCommentPage + 1})" 
+            ${this.currentCommentPage === totalPages ? 'disabled' : ''}>
+            下一页 <i class="fas fa-chevron-right"></i>
+        </button>`;
+        
+        pagination.innerHTML = html;
+    }
+    
+    goToCommentPage(page) {
+        const totalPages = Math.ceil(this.filteredComments.length / this.commentPageSize);
+        if (page >= 1 && page <= totalPages) {
+            this.currentCommentPage = page;
+            this.renderCommentsTable();
+            this.renderCommentsPagination();
+        }
+    }
+    
+    toggleSelectAllComments(checked) {
+        const start = (this.currentCommentPage - 1) * this.commentPageSize;
+        const end = start + this.commentPageSize;
+        const pageComments = this.filteredComments.slice(start, end);
+        
+        pageComments.forEach(comment => {
+            const key = `${comment.postId}-${comment.id}`;
+            if (checked) {
+                this.selectedCommentIds.add(key);
+            } else {
+                this.selectedCommentIds.delete(key);
+            }
+        });
+        
+        this.renderCommentsTable();
+    }
+    
+    openCommentModal(postId, commentId) {
+        const post = this.posts.find(p => p.id === postId);
+        const comment = post.comments.find(c => c.id === commentId);
+        
+        if (post && comment) {
+            this.editingComment = { postId, commentId };
+            
+            document.getElementById('comment-modal-title').textContent = '编辑评论';
+            document.getElementById('comment-post-id').value = postId;
+            document.getElementById('comment-id').value = commentId;
+            document.getElementById('comment-article-title').value = post.title;
+            document.getElementById('comment-author').value = comment.author;
+            document.getElementById('comment-content').value = comment.content;
+            
+            document.getElementById('comment-modal').classList.add('active');
+        }
+    }
+    
+    saveComment() {
+        const postId = parseInt(document.getElementById('comment-post-id').value);
+        const commentId = parseInt(document.getElementById('comment-id').value);
+        const author = document.getElementById('comment-author').value.trim();
+        const content = document.getElementById('comment-content').value.trim();
+        
+        if (!author || !content) {
+            this.showToast('请填写必填字段', 'error');
+            return;
+        }
+        
+        const post = this.posts.find(p => p.id === postId);
+        if (post && post.comments) {
+            const index = post.comments.findIndex(c => c.id === commentId);
+            if (index !== -1) {
+                post.comments[index] = {
+                    ...post.comments[index],
+                    author,
+                    content,
+                    updated_at: new Date().toISOString()
+                };
+                
+                this.processMetadata();
+                this.savePosts();
+                this.closeModals();
+                this.renderComments();
+                this.showToast('评论更新成功', 'success');
+            }
+        }
+    }
+    
+    deleteComment(postId, commentId) {
+        if (confirm('确定要删除这条评论吗？')) {
+            const post = this.posts.find(p => p.id === postId);
+            if (post && post.comments) {
+                post.comments = post.comments.filter(c => c.id !== commentId);
+                
+                this.processMetadata();
+                this.savePosts();
+                this.renderComments();
+                this.showToast('评论删除成功', 'success');
+            }
+        }
+    }
+    
+    batchDeleteComments() {
+        if (this.selectedCommentIds.size === 0) {
+            this.showToast('请先选择要删除的评论', 'error');
+            return;
+        }
+        
+        if (confirm(`确定要删除选中的 ${this.selectedCommentIds.size} 条评论吗？`)) {
+            this.selectedCommentIds.forEach(key => {
+                const [postId, commentId] = key.split('-').map(Number);
+                const post = this.posts.find(p => p.id === postId);
+                if (post && post.comments) {
+                    post.comments = post.comments.filter(c => c.id !== commentId);
+                }
+            });
+            
+            this.selectedCommentIds.clear();
+            this.processMetadata();
+            this.savePosts();
+            this.renderComments();
+            this.showToast('评论删除成功', 'success');
+        }
+    }
+    
     escapeHtml(text) {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+    
+    logout() {
+        if (confirm('确定要退出登录吗？')) {
+            sessionStorage.removeItem('isLoggedIn');
+            sessionStorage.removeItem('loginTime');
+            window.location.href = 'login.html';
+        }
     }
 }
 

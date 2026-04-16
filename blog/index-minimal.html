@@ -10,23 +10,17 @@
     <link rel="stylesheet" href="css/style-minimal.css">
 </head>
 <body>
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <h1><a href="index-minimal.html">我的个人博客</a></h1>
-                <nav>
-                    <a href="index-minimal.html" class="active">首页</a>
-                    <a href="admin.html">管理</a>
-                </nav>
-            </div>
-        </div>
-    </header>
-
     <main class="container">
         <div class="list-view" id="list-view">
             <div class="hero">
-                <h2>优秀文章</h2>
-                <p>分享技术与生活的点滴</p>
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <h2 class="backyard-title">Backyard</h2>
+                    <button id="theme-toggle" class="theme-toggle">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             <div class="filters" id="category-filters">
@@ -58,6 +52,13 @@
                         <h4>标签</h4>
                         <div class="article-tags" id="sidebar-tags">
                         </div>
+                    </div>
+                    
+                    <div class="sidebar-section">
+                        <h4>管理</h4>
+                        <ul class="sidebar-list">
+                            <li><a href="admin.html" target="_blank">进入管理后台</a></li>
+                        </ul>
                     </div>
                 </aside>
             </div>

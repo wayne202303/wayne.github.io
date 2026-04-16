@@ -10,6 +10,7 @@ class BlogMinimal {
 
     async init() {
         await this.loadPosts();
+        this.initTheme();
         this.setupEventListeners();
         this.setupRoutes();
         this.render();
@@ -38,6 +39,33 @@ class BlogMinimal {
 
     setupEventListeners() {
         window.addEventListener('hashchange', () => this.setupRoutes());
+        this.setupThemeToggle();
+    }
+
+    setupThemeToggle() {
+        const themeToggle = document.getElementById('theme-toggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => this.toggleTheme());
+        }
+    }
+
+    initTheme() {
+        const savedTheme = localStorage.getItem('blog-theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        if (savedTheme) {
+            document.body.setAttribute('data-theme', savedTheme);
+        } else if (prefersDark) {
+            document.body.setAttribute('data-theme', 'dark');
+        }
+    }
+
+    toggleTheme() {
+        const currentTheme = document.body.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        document.body.setAttribute('data-theme', newTheme);
+        localStorage.setItem('blog-theme', newTheme);
     }
 
     render() {
@@ -240,9 +268,70 @@ class BlogMinimal {
             .join('');
     }
 
-    renderArticleDetail() {
+    async loadComments(postId) {
+        try {
+            const response = await fetch(`/api/comments/${postId}`);
+            const data = await response.json();
+            return data.success ? data.comments : [];
+        } catch (error) {
+            console.error('加载评论失败:', error);
+            return [];
+        }
+    }
+
+    async submitComment(postId, author, content) {
+        try {
+            const response = await fetch('/api/comments', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ postId, author, content }),
+            });
+            const result = await response.json();
+            
+            if (result.success) {
+                const post = this.posts.find(p => p.id === postId);
+                if (post) {
+                    if (!post.comments) {
+                        post.comments = [];
+                    }
+                    post.comments.push(result.comment);
+                }
+            }
+            
+            return result;
+        } catch (error) {
+            console.error('提交评论失败:', error);
+            return { success: false, message: '网络错误' };
+        }
+    }
+
+    renderComments(comments) {
+        if (!comments || comments.length === 0) {
+            return `<div class="no-comments">暂无评论，快来发表第一条评论吧！</div>`;
+        }
+
+        return comments.map(comment => `
+            <div class="comment-item">
+                <div class="comment-header">
+                    <span class="comment-author">${this.escapeHtml(comment.author)}</span>
+                    <span class="comment-date">${this.formatDate(comment.date)}</span>
+                </div>
+                <div class="comment-content">${this.escapeHtml(comment.content)}</div>
+            </div>
+        `).join('');
+    }
+
+    async renderArticleDetail() {
         const postView = document.getElementById('post-view');
         if (!postView || !this.viewingPost) return;
+
+        if (!this.viewingPost.comments) {
+            const comments = await this.loadComments(this.viewingPost.id);
+            this.viewingPost.comments = comments;
+        }
+        const comments = this.viewingPost.comments || [];
 
         postView.innerHTML = `
             <a href="#/" class="back-btn" onclick="blog.viewList(); return false;">
@@ -265,8 +354,78 @@ class BlogMinimal {
                         ${this.viewingPost.tags.map(tag => `<span class="tag">${this.escapeHtml(tag)}</span>`).join('')}
                     </div>
                 ` : ''}
+                
+                <div class="comments-section">
+                    <h3>评论 (${comments.length})</h3>
+                    
+                    <form class="comment-form" id="comment-form">
+                        <div class="form-group">
+                            <label for="comment-author">昵称</label>
+                            <input type="text" id="comment-author" placeholder="请输入您的昵称" maxlength="50">
+                        </div>
+                        <div class="form-group">
+                            <label for="comment-content">评论内容</label>
+                            <textarea id="comment-content" placeholder="请输入评论内容" maxlength="500" required></textarea>
+                        </div>
+                        <button type="submit">发表评论</button>
+                    </form>
+                    
+                    <div class="comments-list" id="comments-list">
+                        ${this.renderComments(comments)}
+                    </div>
+                </div>
             </article>
         `;
+
+        this.setupCommentForm();
+    }
+
+    setupCommentForm() {
+        const form = document.getElementById('comment-form');
+        if (!form) return;
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const authorInput = document.getElementById('comment-author');
+            const contentInput = document.getElementById('comment-content');
+            const submitBtn = form.querySelector('button[type="submit"]');
+            
+            const author = authorInput.value.trim();
+            const content = contentInput.value.trim();
+            
+            if (!content) {
+                alert('请输入评论内容');
+                return;
+            }
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = '提交中...';
+            
+            const result = await this.submitComment(this.viewingPost.id, author, content);
+            
+            if (result.success) {
+                alert('评论发表成功！');
+                authorInput.value = '';
+                contentInput.value = '';
+                
+                const comments = this.viewingPost.comments || [];
+                const commentsList = document.getElementById('comments-list');
+                if (commentsList) {
+                    commentsList.innerHTML = this.renderComments(comments);
+                }
+                
+                const commentsSection = document.querySelector('.comments-section h3');
+                if (commentsSection) {
+                    commentsSection.textContent = `评论 (${comments.length})`;
+                }
+            } else {
+                alert(`评论发表失败：${result.message || '未知错误'}`);
+            }
+            
+            submitBtn.disabled = false;
+            submitBtn.textContent = '发表评论';
+        });
     }
 
     simpleMarkdown(content) {
